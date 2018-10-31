@@ -1,0 +1,17 @@
+FROM centos:7
+MAINTAINER Immuta Infrastructure Engineering <sre@immuta.com>
+
+WORKDIR /immuta
+
+RUN yum -y install epel-release && \
+    yum -y update && \
+    yum -y install python python-devel python-pip
+
+COPY . /immuta
+
+EXPOSE 8000
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["python"]
+CMD ["app.py"]

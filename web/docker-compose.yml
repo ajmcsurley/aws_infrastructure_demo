@@ -1,0 +1,44 @@
+version: '3'
+services:
+  results-app:
+    container_name: results-app
+    build:
+      context: ./results_src
+      dockerfile: resultsDockerfile
+    environment:
+        REDIS_HOST: db.candidate-172.immuta.io
+        SHOW: 'true'        
+    ports:
+      - 8000:8000
+    network_mode: "host"      
+
+
+  vote-app:
+    container_name: vote-app
+    build:
+      context: ./vote_src
+      dockerfile: voteDockerfile
+    environment:
+        REDIS_HOST: db.candidate-172.immuta.io
+        SHOW: 'true'
+    ports:
+      - 3000:3000
+    network_mode: "host"      
+
+  vote-app-nginx:
+    container_name: vote-app-nginx
+    build:
+      context: .
+      dockerfile: nginxDockerfile
+    volumes:
+      - /etc/ssl/certs:/etc/ssl/certs
+      - /etc/ssl/private:/etc/ssl/private
+    ports:
+      - 80:80
+      - 443:443  
+    depends_on:
+      - results-app
+      - vote-app
+    network_mode: "host"      
+
+

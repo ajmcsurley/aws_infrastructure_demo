@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  connection: local
+  become: True
+  become_user: ec2-user
+  tasks:
+    - name: Add admin public key
+      shell: echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCGHv5pN12mSfUeO4+I/Jgdulas3vR1C+fx32bl8QuFPbvRCgjcrUfZmaQLQexXFbYPCXVaPPRgeZRLO2jwUUGx69R4s2vZxMc7qhAehmDFU3dvIDzE3zdR461++2vNiXIUhNFHHzb+0mbkba6yRf4BPeyOk6Fz1eCJW8RbD3vgRK6tiamv0PnbgVdFjR1YJ3HIZdcvqPb9kvv15kGnRP0hUq0MJseovt4BCrkgQuVM898NIYrxhTcb44BDMASW5yqIEo6JMvGdF0fgsx6gSo6zUINFYCFo7QaAgruNJ9C3Wk3aCLVFszfZmXcWAMldPt6u3C2qiVTPP7ymk+AgxVBV admin" | tee -a /home/ec2-user/.ssh/authorized_keys
+    - name: Update yum
+      shell: sudo yum update -y
+    - name: Install Docker from repo
+      shell: sudo yum install -y docker
+    - name: Add ec2-user to docker group
+      shell: sudo usermod -aG docker ec2-user
+    - name: Start docker service
+      shell: sudo service docker start

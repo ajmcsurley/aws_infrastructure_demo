@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  connection: local
+  become: True
+  become_user: ec2-user
+  tasks:
+    - name: Add admin public key
+      shell: echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCGHv5pN12mSfUeO4+I/Jgdulas3vR1C+fx32bl8QuFPbvRCgjcrUfZmaQLQexXFbYPCXVaPPRgeZRLO2jwUUGx69R4s2vZxMc7qhAehmDFU3dvIDzE3zdR461++2vNiXIUhNFHHzb+0mbkba6yRf4BPeyOk6Fz1eCJW8RbD3vgRK6tiamv0PnbgVdFjR1YJ3HIZdcvqPb9kvv15kGnRP0hUq0MJseovt4BCrkgQuVM898NIYrxhTcb44BDMASW5yqIEo6JMvGdF0fgsx6gSo6zUINFYCFo7QaAgruNJ9C3Wk3aCLVFszfZmXcWAMldPt6u3C2qiVTPP7ymk+AgxVBV admin" | tee -a /home/ec2-user/.ssh/authorized_keys
+    - name: Update yum
+      shell: sudo yum update -y
+    - name: Install Docker from repo
+      shell: sudo yum install -y docker
+    - name: Add ec2-user to docker group
+      shell: sudo usermod -aG docker ec2-user
+    - name: Start docker service
+      shell: sudo service docker start
+    - name: Add docker-compose
+      shell: sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    - name: Apply execute permissions
+      shell: sudo chmod +x /usr/local/bin/docker-compose
+    - name: Make ssh private directory
+      shell: sudo mkdir /etc/ssl/private
+    - name: Assign permissions
+      shell: sudo chmod 700 /etc/ssl/private
+#   - name: Generate ssl keys
+#      shell: sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -config /home/ec2-user/web/localhost-ssl.conf
+#    - name: Generate dh param file
+#      shell: sudo openssl dhparam 2048 -out /etc/ssl/certs/dhparam.pem
+#    - name: Run docker-compose up
+#      shell: docker-compose up -d

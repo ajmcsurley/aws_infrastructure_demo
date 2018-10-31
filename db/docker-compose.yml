@@ -1,0 +1,13 @@
+version: '3'
+services:
+  redis-db:
+    container_name: redis-db
+    build:
+      context: .
+      dockerfile: dbDockerfile
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
